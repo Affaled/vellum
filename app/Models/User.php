@@ -14,6 +14,19 @@ class User extends Authenticatable
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (empty($user->role_id)) {
+                $readerRole = Role::where('name', 'reader')->first();
+                $user->role_id = $readerRole?->id;
+            }
+        });
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -24,6 +37,7 @@ class User extends Authenticatable
         'password',
         'exp_level',
         'total_chapters_read',
+        'role_id',
     ];
 
     /**
@@ -36,6 +50,7 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
+        'role_id',
     ];
 
     /**
@@ -51,6 +66,7 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
             'exp_level' => 'integer',
             'total_chapters_read' => 'integer',
+            'role_id'=> 'integer',
         ];
     }
 }
