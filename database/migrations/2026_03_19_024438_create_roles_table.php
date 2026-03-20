@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role_name')->nullable()->after('email');
+            $table->foreign('role_name')->references('name')->on('roles')->onUpdate('cascade')->onDelete('set null');
+        });
     }
 
     /**
@@ -23,9 +28,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role_name']);
+            $table->dropColumn('role_name');
         });
+
+        Schema::dropIfExists('roles');
     }
 };
